@@ -1,0 +1,146 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/profile';
+import { isPreview } from '../lib/data';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = profile.siteName,
+  description = profile.description,
+  // PNG, not the SVG it is exported from: most社交平台 refuse SVG share cards.
+  image = '/images/og-default.png',
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = title === profile.siteName ? title : `${title} | ${profile.siteName}`;
+// pathname already includes base when Astro.site/base are configured
+const pathForCanonical = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonical = new URL(pathForCanonical, Astro.site).href;
+const imagePath = image.startsWith('/') ? image.slice(1) : image;
+const ogImage = new URL(withBase(imagePath), Astro.site).href;
+const robots = isPreview || noindex ? 'noindex, nofollow' : 'index, follow';
+const year = new Date().getFullYear();
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: profile.siteName,
+  description,
+  url: canonical,
+  inLanguage: 'zh-CN',
+  author: {
+    '@type': 'Person',
+    name: profile.name,
+    sameAs: [profile.github.url],
+  },
+};
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content={robots} />
+    <meta name="author" content={profile.name} />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="canonical" href={canonical} />
+    <title>{pageTitle}</title>
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="zh_CN" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Motion CSS only hides content once JS is known to run, so no-JS visitors see everything. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <div class="backdrop" aria-hidden="true"><span class="blob blob-a"></span><span class="blob blob-b"></span></div>
+    {isPreview && (
+      <div class="preview-bar" data-preview>本地预览：显示待审条目，正式构建只收录已批准的内容</div>
+    )}
+    <div class="progress" aria-hidden="true"><span></span></div>
+    <header class="topbar">
+      <div class="topbar-row shell">
+        <a class="brand" href={withBase()}>
+          <span class="brand-dot" aria-hidden="true"></span>
+          {profile.brand}
+        </a>
+        <a class="topbar-link" href={profile.github.url} target="_blank" rel="noopener noreferrer">
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="footer">
+      <div class="footer-row shell">
+        <span>© {year} {profile.name}</span>
+        <span class="meta">Built with Astro</span>
+      </div>
+    </footer>
+    <script>
+      const bar = document.querySelector<HTMLElement>('.progress');
+      const topbar = document.querySelector<HTMLElement>('.topbar');
+      let ticking = false;
+
+      const update = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        bar?.style.setProperty('--p', progress.toFixed(4));
+        topbar?.classList.toggle('is-scrolled', window.scrollY > 8);
+        ticking = false;
+      };
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(update);
+        },
+        { passive: true },
+      );
+      window.addEventListener('resize', update);
+      update();
+
+      // Reveal-on-scroll. Reduced-motion users and old browsers get everything shown at once.
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        items.forEach((item) => item.classList.add('is-in'));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add('is-in');
+              observer.unobserve(entry.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        items.forEach((item) => observer.observe(item));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+# 作品集板块：用大模型辅助做出来的个人 AI 工具。
+# 发布规则（D-015）：正式构建只收录 approved: true 的条目；
+# repo_id 指向的仓库在 GitHub 上已公开时，整张卡片点进去就是仓库。
+# result（效果）可选，只写自己核实过的结果，没核实就不写（D-018）。
+# 截图只用虚构演示数据；文案不写真实公司名、服务对象、内部系统名和本机路径。
+
+- id: agent-dashboard
+  title: 知识库和 Agent 的总控面板
+  summary: 在 Obsidian 里打开一个面板，就能看到知识库哪里缺维护、项目说明齐不齐、最近让 Agent 做过哪些任务。
+  scenario: 同时用几个 AI 编码工具维护知识库和项目，谁改过什么很快就记不清。与其每天翻文件夹，不如让它们都往一个地方汇报。
+  tools: [Obsidian, TypeScript, Codex, Grok CLI]
+  # 仓库含工作内部术语，不公开（D-015），所以没有 repo_id。
+  date: 2026-06-23
+  status: 在用
+  approved: true
+
+- id: kb-template
+  title: 个人知识库模板
+  summary: 把自己搭知识库的做法抽成一个能直接复制的骨架：目录怎么分、页面分几类、AI 整理时守哪些规矩。
+  scenario: 自己的知识库越用越顺，但里面全是工作资料，没法直接给别人参考。于是只留下结构、规则和脚本，内容全部换成虚构示例。
+  tools: [Obsidian, Python, Claude Code, Codex]
+  repo_id: ai-wiki-kb-template
+  date: 2026-06-28
+  status: 维护中
+  approved: true
+
+- id: skills-sync
+  title: Skill 一处维护，三端生效
+  summary: 常用的 AI Skill 只在一个仓库里改，一条同步命令把它们链接到 Claude Code、Codex 和 Grok 三个工具。
+  scenario: 三个工具各有一份 Skill 目录，分开维护很容易版本对不上。换成一个源仓库加软链接后，改一次三边同时生效。
+  tools: [Shell, Git, Claude Code, Codex, Grok CLI]
+  date: 2026-09-01
+  status: 在用
+  approved: true
+
+- id: project-intake
+  title: 接手项目前的开工检查表
+  summary: 让 AI 动手之前先把项目自己读一遍，交回一张任务卡：能改哪些文件、以哪份文档为准、哪些地方不许动、怎么算做完。
+  scenario: 同一个项目隔一段时间再让 AI 接手，它常照着过时的说法改文件，或者顺手动了不该动的目录。与其每次重讲一遍背景，不如固定成一张开工前必须填的卡。
+  tools: [Claude Code, Codex, Markdown]
+  date: 2026-07-31
+  status: 在用
+  approved: true
+
+- id: work-router
+  title: 新事情来了先定归属
+  summary: 一件新事进来，先判断它到底算不算一个项目；算，就用四个问题定下放哪个库、要不要写代码、登记顺序、谁来做。
+  scenario: 想到什么就新建一个文件夹，过一阵谁也找不到东西在哪，看板上还会留下磁盘上并不存在的项目。先分流再动手，把一条判断和一个项目分开放。
+  tools: [Claude Code, Markdown, Shell]
+  date: 2026-09-03
+  status: 在用
+  approved: true
+
+- id: this-site
+  title: Will in Practice
+  summary: 你正在看的这个网站。单页结构，关于、AI 学习、作品集三块用标签页切换，内容全部来自几份手改的数据文件。
+  scenario: 想要一个地方集中放做成的工具，又不想维护后台。静态站加构建前检查，推到 GitHub 自动上线，没审过的内容进不了正式站。
+  tools: [Astro, Codex, Claude Code, Cloudflare Pages]
+  repo_id: will-in-practice
+  date: 2026-07-15
+  status: 在用
+  approved: true

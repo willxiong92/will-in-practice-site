@@ -1,0 +1,13 @@
+node_modules/
+.astro/
+dist/
+.DS_Store
+
+# Rebuildable GPT Sites publication checkout.
+work/sites-release/
+work/sites-release.tar.gz
+
+# Local dependency link and legacy reference material.
+node_modules
+tasks/
+网站搭建规划.md

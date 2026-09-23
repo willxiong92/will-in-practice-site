@@ -1,0 +1,117 @@
+---
+/**
+ * Big section tabs with URL hash sync.
+ * Without JavaScript the tabs are plain in-page links and every panel stays visible,
+ * so the page still reads top to bottom. The script upgrades them to ARIA tabs.
+ * The selected tab's cream highlighter is pure CSS (.tab::after), so nothing here measures layout.
+ */
+interface Tab {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  tabs: Tab[];
+}
+
+const { tabs } = Astro.props;
+// One panel needs no tab bar; the script then leaves that panel expanded.
+const showTabs = tabs.length > 1;
+---
+<div class="tabs-root" data-tabs>
+  {showTabs && (
+    <nav class="tabs" aria-label="板块" data-tablist>
+      {tabs.map((tab) => (
+        <a class="tab" href={`#${tab.id}`} id={`tab-${tab.id}`} data-tab={tab.id}>{tab.label}</a>
+      ))}
+    </nav>
+  )}
+  <div class="panels">
+    <slot />
+  </div>
+</div>
+
+<script>
+  function setupTabs(root: HTMLElement) {
+    const list = root.querySelector<HTMLElement>('[data-tablist]');
+    const tabs = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-tab]'));
+    if (!list || tabs.length === 0) return;
+
+    const ids = tabs.map((tab) => tab.dataset.tab ?? '');
+    const panelFor = (id: string) => document.getElementById(id);
+
+    list.setAttribute('role', 'tablist');
+    tabs.forEach((tab, index) => {
+      const panel = panelFor(ids[index]);
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', ids[index]);
+      panel?.setAttribute('role', 'tabpanel');
+      panel?.setAttribute('aria-labelledby', tab.id);
+      panel?.setAttribute('tabindex', '0');
+    });
+    root.classList.add('tabs-ready');
+
+    const select = (id: string, options: { focus?: boolean; syncHash?: boolean } = {}) => {
+      tabs.forEach((tab, index) => {
+        const active = ids[index] === id;
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        const panel = panelFor(ids[index]);
+        if (panel) panel.hidden = !active;
+        if (active && options.focus) tab.focus();
+      });
+      // replaceState keeps the link shareable without piling up history entries or jumping the page.
+      if (options.syncHash && location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
+    };
+
+    /**
+     * Switching to a shorter panel can leave the tab bar scrolled off the top of the window.
+     * Pull it back only in that case, so a click near the top of the page never jumps.
+     */
+    const keepTabsInView = () => {
+      if (root.getBoundingClientRect().top < 0) root.scrollIntoView({ block: 'start' });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', (event) => {
+        event.preventDefault();
+        select(ids[index], { syncHash: true });
+        requestAnimationFrame(keepTabsInView);
+      });
+      tab.addEventListener('keydown', (event) => {
+        const last = tabs.length - 1;
+        let next = -1;
+        if (event.key === 'ArrowRight') next = index === last ? 0 : index + 1;
+        else if (event.key === 'ArrowLeft') next = index === 0 ? last : index - 1;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = last;
+        if (next === -1) return;
+        event.preventDefault();
+        select(ids[next], { focus: true, syncHash: true });
+        requestAnimationFrame(keepTabsInView);
+      });
+    });
+
+    const idFromHash = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      return ids.includes(id) ? id : null;
+    };
+
+    const initial = idFromHash();
+    select(initial ?? ids[0]);
+    // Hiding the other panels shifts layout, so bring a deep-linked tab back into view.
+    if (initial) requestAnimationFrame(() => root.scrollIntoView({ block: 'start' }));
+
+    // A hash link followed from elsewhere on the page scrolls nowhere on its own once the
+    // target panel is hidden, so scroll here too and land on the same spot as a fresh load.
+    window.addEventListener('hashchange', () => {
+      const id = idFromHash();
+      if (!id) return;
+      select(id);
+      requestAnimationFrame(() => root.scrollIntoView({ block: 'start' }));
+    });
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-tabs]');
+  if (root) setupTabs(root);
+</script>

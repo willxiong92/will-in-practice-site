@@ -1,0 +1,26 @@
+# AI 学习板块：从公开来源学到的做法，以及它用在了自己工作的哪里。
+# 发布规则（D-015）：正式构建只收录 approved: true 的条目。
+# 只写公开来源；文案不写真实公司名、服务对象、内部系统名和本机路径。
+# 「用在哪」只写已经发生的事，没用上的写 status: 在学。
+
+- id: oiloil-site
+  title: 从 oiloil.org 学个人站怎么呈现
+  summary: 一个公开分享 AI Skill 的个人站：白底、一个高亮色、超大标题，板块用标签页切换。
+  takeaway: 本站这次改版照它的视觉重做：奶油黄高亮、超大紧排标题、板块标签页。
+  source: oiloil.org
+  url: https://www.oiloil.org
+  kind: 网站
+  date: 2026-09-11
+  status: 已用上
+  approved: true
+
+- id: grilling-decision-tree
+  title: 让 AI 按决策树成轮提问
+  summary: 需求没说清时，AI 先把待定问题画成决策树，把当下能答的一轮问完，每题附推荐答案。
+  takeaway: 已写进自己给 AI 工具定的协作规则：要拍板时一轮问完，不再一个一个挤。
+  source: mattpocock/skills 的 grilling
+  url: https://github.com/mattpocock/skills
+  kind: Skill
+  date: 2026-09-02
+  status: 已用上
+  approved: true

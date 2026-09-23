@@ -1,0 +1,25 @@
+---
+import { profile } from '../../data/profile';
+import { isPreview } from '../../lib/data';
+import Illo from './Illo.astro';
+
+// Joined with a pause so a screen reader reads three lines, not one run-on phrase.
+const headlineText = profile.headline.map((line) => line.text).join('，');
+// The hero art is optional: public builds show nothing until it exists, local preview shows the frame.
+const showIllustration = Boolean(profile.heroIllustration) || isPreview;
+---
+<section class="hero shell" aria-label="首屏">
+  <p class="meta hero-meta">{profile.role}</p>
+  <div class="hero-stage">
+    <h1 class="hero-title" aria-label={headlineText}>
+      {profile.headline.map((line, index) => (
+        <span class="hero-line" style={`--i: ${index}`} aria-hidden="true">
+          {'highlight' in line ? <mark class="hero-mark">{line.text}</mark> : line.text}
+        </span>
+      ))}
+    </h1>
+    {showIllustration && <Illo src={profile.heroIllustration} variant="hero" ratio="1:1" />}
+  </div>
+  <p class="hero-lede">{profile.lede}</p>
+  <a class="hero-down meta" href="#sections">往下看 <span aria-hidden="true">↓</span></a>
+</section>

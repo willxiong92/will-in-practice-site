@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
+---
+<BaseLayout title="页面不存在" noindex>
+  <section class="not-found shell" aria-labelledby="not-found-title">
+    <span class="outline-num not-found-num" aria-hidden="true">404</span>
+    <h1 id="not-found-title">这一页已经不在了</h1>
+    <p>网站改成了单页：个人介绍、AI 学习和作品集都在首页，旧的文章链接不再保留。</p>
+    <a class="button" href={withBase()}>回到首页 <span aria-hidden="true">→</span></a>
+  </section>
+</BaseLayout>

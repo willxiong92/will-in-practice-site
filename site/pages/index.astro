@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactList from '../components/home/ContactList.astro';
+import Hero from '../components/home/Hero.astro';
+import Illo from '../components/home/Illo.astro';
+import LearningCard from '../components/home/LearningCard.astro';
+import SectionTabs from '../components/home/SectionTabs.astro';
+import WorkCard from '../components/home/WorkCard.astro';
+import { profile } from '../data/profile';
+import { getLearning, getRepos, getWorks } from '../lib/data';
+
+const learning = await getLearning();
+const works = await getWorks();
+// Registry lookup: a work card links out only when its repo is public (D-018).
+const repoById = new Map((await getRepos()).map((repo) => [repo.id, repo]));
+
+// Panels with nothing approved are left out, so a public build never shows an empty tab.
+const tabs = [
+  { id: 'about', label: '关于' },
+  ...(learning.length > 0 ? [{ id: 'learning', label: 'AI 学习' }] : []),
+  ...(works.length > 0 ? [{ id: 'works', label: '作品集' }] : []),
+];
+
+const pad = (value: number) => String(value).padStart(2, '0');
+---
+<BaseLayout>
+  <Hero />
+
+  <section class="section" id="sections" aria-labelledby="sections-title">
+    <div class="shell">
+      <span class="outline-num section-num" aria-hidden="true">01</span>
+      <h2 class="sr-only" id="sections-title">板块</h2>
+      <SectionTabs tabs={tabs}>
+        <div class="panel" id="about">
+          <h3 class="panel-title">关于</h3>
+          <div class="me-intro" data-reveal>
+            <span class="meta me-kicker">{profile.brand}</span>
+            <div class="me-summary">
+              {profile.about.intro.map((paragraph) => <p>{paragraph}</p>)}
+            </div>
+            <ul class="me-tags" aria-label="做事原则">
+              {profile.about.principles.map((principle) => <li>{principle}</li>)}
+            </ul>
+          </div>
+          <div class="panel-group">
+            <p class="group-label">方向<span class="group-count">{pad(profile.about.focus.length)}</span></p>
+            <ol class="card-list">
+              {profile.about.focus.map((item, index) => (
+                <li data-reveal style={`--d: ${index * 70}ms`}>
+                  <article class="card card-focus">
+                    <div class="card-body">
+                      <p class:list={['focus-status', item.state === '在做' ? 'is-now' : 'is-next']}>
+                        <span class="focus-dot" aria-hidden="true"></span>{item.state}
+                      </p>
+                      <h4 class="card-title title-xl"><span class="hl-bar">{item.title}</span></h4>
+                      <p class="card-summary">{item.text}</p>
+                    </div>
+                    <Illo src={item.illustration} variant="art" ratio="5:3" />
+                    <span class="outline-num card-no" aria-hidden="true">{pad(index + 1)}</span>
+                  </article>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        {learning.length > 0 && (
+          <div class="panel" id="learning">
+            <h3 class="panel-title">AI 学习</h3>
+            <p class="panel-lede">学 AI 的记录：从哪学的，学到了什么，用在了自己工作的哪里。</p>
+            <p class="group-label">学习记录<span class="group-count">{pad(learning.length)}</span></p>
+            <ul class="card-grid">
+              {learning.map((item, index) => (
+                <li data-reveal style={`--d: ${(index % 2) * 90}ms`}>
+                  <LearningCard item={item} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {works.length > 0 && (
+          <div class="panel" id="works">
+            <h3 class="panel-title">作品集</h3>
+            <p class="panel-lede">做出来的个人工具，每一个都在解决自己工作里的一件具体麻烦事。代码公开的，整张卡片点进去就是仓库。</p>
+            <p class="group-label">作品<span class="group-count">{pad(works.length)}</span></p>
+            <ul class="card-list">
+              {works.map((work, index) => (
+                <li data-reveal style={`--d: ${index * 70}ms`}>
+                  <WorkCard
+                    work={work}
+                    repo={work.data.repo_id ? repoById.get(work.data.repo_id.id) : undefined}
+                    index={index}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </SectionTabs>
+    </div>
+  </section>
+
+  <section class="section" id="elsewhere" aria-labelledby="elsewhere-title">
+    <div class="shell">
+      <span class="outline-num section-num" aria-hidden="true">02</span>
+      <h2 class="section-label" id="elsewhere-title">Elsewhere</h2>
+      <p class="section-lede">代码和更新都在 GitHub。</p>
+      <ContactList />
+    </div>
+  </section>
+</BaseLayout>

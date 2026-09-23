@@ -1,0 +1,14 @@
+# 公开仓库登记表。作品卡上的「看仓库 ↗」从这里取地址（D-018：仓库不再单独占一个标签页）。
+# 发布规则：只有 visibility: public 的仓库会被作品卡链接出去；
+# 私有仓库在本地预览里标「仓库未公开」，正式构建里既没有链接也没有标记。
+# 这份文件只登记地址，不放对外文案；文案写在 works.yaml 的作品条目里。
+
+- id: ai-wiki-kb-template
+  title: 本地优先的 AI 知识库模板
+  url: https://github.com/willxiong92/ai-wiki-kb-template
+  visibility: public
+
+- id: will-in-practice
+  title: Will in Practice
+  url: https://github.com/willxiong92/will-in-practice-site
+  visibility: public

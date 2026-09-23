@@ -1,0 +1,37 @@
+---
+import type { Learning } from '../../lib/data';
+import { formatDay, isPreview } from '../../lib/data';
+import Illo from './Illo.astro';
+
+interface Props {
+  item: Learning;
+}
+
+const { item } = Astro.props;
+const { title, summary, takeaway, source, url, kind, date, status, illustration, approved } = item.data;
+---
+<article class:list={['card', 'card-article', url && 'is-link']} data-card="learning">
+  <Illo src={illustration} variant="cover" ratio="16:9" />
+  <div class="card-body">
+    <p class="card-meta">
+      <time class="meta" datetime={date.toISOString().slice(0, 10)}>{formatDay(date)}</time>
+      <span class="meta">{kind}</span>
+      <span class="meta">{status}</span>
+      {isPreview && !approved && <span class="badge" data-preview>文案待审</span>}
+    </p>
+    <h4 class="card-title title-sm">
+      {url ? (
+        <a class="card-link" href={url} target="_blank" rel="noopener noreferrer">
+          <span class="hl-bar">{title}</span><span class="sr-only">（打开来源）</span>
+        </a>
+      ) : (
+        <span class="hl-bar">{title}</span>
+      )}
+    </h4>
+    <p class="card-summary">{summary}</p>
+    <p class="card-note"><span class="note-label">用在哪</span>{takeaway}</p>
+    <p class="card-foot meta">
+      来源 {source}{url && <span class="arrow" aria-hidden="true">&nbsp;↗</span>}
+    </p>
+  </div>
+</article>

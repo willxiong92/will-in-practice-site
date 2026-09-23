@@ -1,0 +1,26 @@
+---
+/**
+ * Illustration slot shared by the hero and every card.
+ * With no image yet it renders a cream panel with a faint dot grid, so the layout is final before the art is.
+ * Local preview also labels the slot with its frame ratio, which tells the illustrator what size to draw.
+ */
+import { isPreview } from '../../lib/data';
+import { withBase } from '../../lib/paths';
+
+interface Props {
+  /** File under public/images/, or undefined while the art is still being drawn. */
+  src?: string;
+  variant: 'hero' | 'cover' | 'stage' | 'art';
+  /** Frame ratio shown on the preview label, e.g. "16:9". */
+  ratio: string;
+}
+
+const { src, variant, ratio } = Astro.props;
+---
+<div class:list={['illo', `illo-${variant}`, { 'is-empty': !src }]} aria-hidden="true">
+  {src ? (
+    <img src={withBase(src)} alt="" loading="lazy" decoding="async" />
+  ) : (
+    isPreview && <span class="illo-hint" data-preview>插图位 {ratio}</span>
+  )}
+</div>

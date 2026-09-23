@@ -1,0 +1,9 @@
+# Keep Codex project open light — do not index build/deps artifacts
+node_modules/
+.astro/
+dist/
+.git/
+.wrangler/
+package-lock.json
+**/*.map
+**/coverage/
