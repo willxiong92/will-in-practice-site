@@ -21,4 +21,4 @@ npm run build:github
 - Cloudflare：https://will-in-practice.pages.dev ，现有站点保留，新仓库尚未接入自动部署。
 - GitHub Pages：新仓库尚未启用；兼容构建路径为 `/will-in-practice-site/`，工作流仅手动触发。
 
-本仓库从已确认的新网站版本建立干净快照，不包含旧项目历史。旧本地项目保留作恢复依据。后续只在此仓库维护；旧 GitHub 仓库删除授权与执行状态见 `docs/ROADMAP.md`。
+本仓库从已确认的新网站版本建立干净快照，不包含旧项目历史。旧 GitHub 仓库与旧本地项目均已于 2026-09-24 前删除，本仓库是唯一版本。后续只在此仓库维护；旧 GitHub 仓库删除授权与执行状态见 `docs/ROADMAP.md`。
