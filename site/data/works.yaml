@@ -54,8 +54,8 @@
 - id: this-site
   title: Will in Practice
   summary: 你正在看的这个网站。单页结构，关于、AI 学习、作品集三块用标签页切换，内容全部来自几份手改的数据文件。
-  scenario: 想要一个地方集中放做成的工具，又不想维护后台。静态站加构建前检查，推到 GitHub 自动上线，没审过的内容进不了正式站。
-  tools: [Astro, Codex, Claude Code, Cloudflare Pages]
+  scenario: 想要一个地方集中放做成的工具，又不想维护后台。静态站加构建前检查，每次上线由 Will 确认后发布到 GPT Sites，没审过的内容进不了正式站。
+  tools: [Astro, Codex, Claude Code, GPT Sites]
   repo_id: will-in-practice
   date: 2026-07-15
   status: 在用
